@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIBEXS V5 - Streamlined Application Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .progress-container {
+            margin-top: 24px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .progress-step.completed {
+            background: #10b981;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 12px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%);
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .step-label {
+            text-align: center;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .field-note {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .auto-save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        .commission-display {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .commission-display h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .commission-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .program-preview {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .program-preview.show {
+            display: block;
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .program-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .document-section {
+            margin: 32px 0;
+        }
+
+        .document-section h3 {
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .document-item {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+        }
+
+        .document-item:hover {
+            border-color: #667eea;
+            background: #f3f4f6;
+        }
+
+        .document-item.required {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+
+        .document-item.uploaded {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .document-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 0.875rem;
+        }
+
+        .document-description {
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.3;
+        }
+
+        .document-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .status-required {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-optional {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .status-uploaded {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .tracking-info {
+            background: #f0fdf4;
+            border: 1px solid #22c55e;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .tracking-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #15803d;
+            margin: 8px 0;
+        }
+
+        .next-steps {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .next-steps h4 {
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .next-steps ul {
+            color: #6b7280;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row, 
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 5px;
+                border-radius: 12px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px 24px;
+            }
+
+            .progress-steps {
+                gap: 8px;
+            }
+
+            .progress-step {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .validation-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #ef4444;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>UNIBEXS V5 Application System</h1>
+            <p>Streamlined 3-Step Application Flow</p>
+            
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-step active" id="step1Indicator">1</div>
+                    <div class="progress-step" id="step2Indicator">2</div>
+                    <div class="progress-step" id="step3Indicator">3</div>
+                </div>
+                <div class="step-label" id="stepLabel">Step 1: Student Profile</div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Step 1: Quick Student Profile -->
+            <div class="step active" id="step1">
+                <h2 class="step-title">Student Profile</h2>
+                <p class="step-description">Create a student record with basic information. This takes just 30 seconds.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name (as per passport) <span class="required">*</span></label>
+                        <input type="text" id="fullName" required>
+                        <div class="field-note">Must match passport exactly</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Passport Number <span class="required">*</span></label>
+                        <input type="text" id="passportNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth <span class="required">*</span></label>
+                        <input type="date" id="dateOfBirth" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nationality <span class="required">*</span></label>
+                        <select id="nationality" required>
+                            <option value="">Select Nationality</option>
+                            <option value="Sudan">Sudan</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="UAE">United Arab Emirates</option>
+                            <option value="Oman">Oman</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="Jordan">Jordan</option>
+                            <option value="Yemen">Yemen</option>
+                            <option value="Libya">Libya</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone">
+                        <div class="field-note">Include country code (e.g., +966)</div>
+                    </div>
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep1">
+                    <div class="loading-spinner"></div>
+                    <span>Auto-saving...</span>
+                </div>
+            </div>
+
+            <!-- Step 2: Smart Program Selection -->
+            <div class="step" id="step2">
+                <h2 class="step-title">Program Selection</h2>
+                <p class="step-description">Find your program with commission transparency. See exactly what you'll earn before applying.</p>
+
+                <div class="form-group">
+                    <label>Program URL <span class="required">*</span></label>
+                    <input type="url" id="programUrl" placeholder="https://university.edu/programs/bachelor-computer-science" required>
+                    <div class="field-note">Paste the direct link to the university program page</div>
+                </div>
+
+                <div class="program-preview" id="programPreview">
+                    <h3 style="margin-bottom: 16px;">📚 Program Information</h3>
+                    <div class="program-details">
+                        <div class="detail-item">
+                            <div class="detail-label">University</div>
+                            <div class="detail-value" id="universityName">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Program</div>
+                            <div class="detail-value" id="programName">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Country</div>
+                            <div class="detail-value" id="country">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tuition Fee</div>
+                            <div class="detail-value" id="tuitionFee">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="commission-display" id="commissionDisplay" style="display: none;">
+                    <h3>💰 Your Commission</h3>
+                    <div class="commission-amount" id="commissionAmount">$0</div>
+                    <p><span id="commissionPercent">0</span>% commission on successful enrollment</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intended Intake <span class="required">*</span></label>
+                        <select id="intakeDate" required>
+                            <option value="">Select Intake</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority Level</label>
+                        <select id="priority">
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep2">
+                    <div class="loading-spinner"></div>
+                    <span>Auto-saving program selection...</span>
+                </div>
+            </div>
+
+            <!-- Step 3: Smart Document Upload -->
+            <div class="step" id="step3">
+                <h2 class="step-title">Document Upload</h2>
+                <p class="step-description">Smart document filtering based on your program level and nationality.</p>
+
+                <div class="document-section">
+                    <h3>📋 Required Documents</h3>
+                    <div class="document-grid" id="requiredDocsGrid">
+                        <!-- Dynamically populated based on program level and nationality -->
+                    </div>
+                </div>
+
+                <div class="document-section">
+                    <h3>📄 Optional Documents</h3>
+                    <div class="document-grid" id="optionalDocsGrid">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="document-section" id="conditionalDocsSection" style="display: none;">
+                    <h3>⚠️ Additional Required Documents</h3>
+                    <p style="color: #d97706; margin-bottom: 16px; font-size: 0.875rem;">
+                        Based on your nationality, these documents are also required:
+                    </p>
+                    <div class="document-grid" id="conditionalDocsGrid">
+                        <!-- Dynamically populated based on nationality -->
+                    </div>
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep3">
+                    <div class="loading-spinner"></div>
+                    <span>Saving document uploads...</span>
+                </div>
+            </div>
+
+            <!-- Success Step -->
+            <div class="step" id="successStep">
+                <div class="success-page">
+                    <div class="success-icon">✓</div>
+                    <h2 class="success-title">Application Submitted Successfully!</h2>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Your application has been created and is ready for admin review.</p>
+                    
+                    <div class="tracking-info">
+                        <p><strong>Tracking Number:</strong></p>
+                        <div class="tracking-number" id="trackingNumber">UNI2024123456</div>
+                    </div>
+
+                    <div class="next-steps">
+                        <h4>What happens next:</h4>
+                        <ul>
+                            <li>Admin will be automatically assigned to review your application</li>
+                            <li>Program URL will be verified for accuracy</li>
+                            <li>Document review process begins within 24 hours</li>
+                            <li>You'll receive email updates on application progress</li>
+                            <li>Commission tracking will be activated upon student enrollment</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 32px;">
+                        <button class="btn btn-primary" onclick="createNewApplication()">Create New Application</button>
+                        <button class="btn btn-secondary" onclick="viewDashboard()">View Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                    Previous
+                </button>
+                <div>
+                    <button class="btn btn-secondary" onclick="fillSample()" id="sampleBtn">Fill Sample Data</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                        Next: Program Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs for document uploads -->
+    <input type="file" id="hiddenFileInput" multiple accept=".pdf,.doc,.docx,.jpg,.png" style="display: none;">
+
+    <script>
+        // Application state
+        let currentStep = 1;
+        let applicationData = {
+            student: {},
+            program: {},
+            documents: [],
+            session: null
+        };
+
+        // Sample program data with commission rates (simulating API response)
+        const samplePrograms = {
+            'https://www.utm.my/academic/faculty-of-computing/bachelor-of-computer-science/': {
+                university: 'University of Technology Malaysia',
+                program: 'Bachelor of Computer Science',
+                level: 'Bachelor',
+                country: 'Malaysia',
+                tuitionFee: 25000,
+                commission: 12.0,
+                currency: 'USD',
+                intakes: ['2024-09-01', '2025-01-15', '2025-05-01']
+            },
+            'https://www.monash.edu.my/study/undergraduate/courses/business-administration': {
+                university: 'Monash University Malaysia',
+                program: 'Bachelor of Business Administration', 
+                level: 'Bachelor',
+                country: 'Malaysia',
+                tuitionFee: 35000,
+                commission: 15.0,
+                currency: 'USD',
+                intakes: ['2024-07-01', '2024-11-01', '2025-03-01']
+            },
+            'https://www.taylor.edu.my/programmes/computer-science-artificial-intelligence/': {
+                university: 'Taylor\'s University',
+                program: 'Bachelor of Computer Science (AI)',
+                level: 'Bachelor',
+                country: 'Malaysia',
+                tuitionFee: 28000,
+                commission: 10.0,
+                currency: 'USD',
+                intakes: ['2024-08-15', '2025-01-08', '2025-04-28']
+            }
+        };
+
+        // Document requirements based on program level and nationality
+        const documentRequirements = {
+            required: {
+                'Bachelor': ['passport_scan', 'high_school_cert'],
+                'Master': ['passport_scan', 'bachelor_cert', 'statement_purpose', 'recommendation_letters', 'cv_resume'],
+                'PhD': ['passport_scan', 'bachelor_cert', 'master_cert', 'statement_purpose', 'research_proposal', 'recommendation_letters', 'cv_resume']
+            },
+            optional: {
+                'all': ['english_cert', 'white_bg_photo', 'birth_certificate', 'address_proof']
+            },
+            conditional: {
+                'Sudan': ['yellow_fever_cert', 'embassy_noc'],
+                'Oman': ['embassy_noc'],
+                'Libya': ['embassy_noc']
+            }
+        };
+
+        const documentInfo = {
+            'passport_scan': { name: 'Passport Scan', icon: '📘', desc: 'Clear scan of passport bio page' },
+            'high_school_cert': { name: 'High School Certificate', icon: '🎓', desc: 'Official graduation documents' },
+            'bachelor_cert': { name: 'Bachelor\'s Certificate', icon: '🎓', desc: 'Official bachelor degree documents' },
+            'master_cert': { name: 'Master\'s Certificate', icon: '🎓', desc: 'Official master degree documents' },
+            'english_cert': { name: 'English Proficiency', icon: '🗣️', desc: 'IELTS, TOEFL, or similar test' },
+            'statement_purpose': { name: 'Statement of Purpose', icon: '📝', desc: 'Personal statement for graduate programs' },
+            'research_proposal': { name: 'Research Proposal', icon: '🔬', desc: 'Detailed research proposal' },
+            'recommendation_letters': { name: 'Recommendation Letters', icon: '👥', desc: 'Academic or professional references' },
+            'cv_resume': { name: 'CV / Resume', icon: '📄', desc: 'Current curriculum vitae' },
+            'white_bg_photo': { name: 'White Background Photo', icon: '📸', desc: 'Passport-style photograph' },
+            'birth_certificate': { name: 'Birth Certificate', icon: '📋', desc: 'Official birth certificate' },
+            'address_proof': { name: 'Address Proof', icon: '🏠', desc: 'Utility bill or official address proof' },
+            'yellow_fever_cert': { name: 'Yellow Fever Certificate', icon: '💉', desc: 'Required for Sudanese students' },
+            'embassy_noc': { name: 'Embassy NOC', icon: '🏛️', desc: 'No Objection Certificate from embassy' }
+        };
+
+        // Auto-save functionality
+        let autoSaveTimer = null;
+
+        function autoSave() {
+            // Clear existing timer
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+
+            // Show auto-save indicator
+            const indicator = document.getElementById(`autoSaveStep${currentStep}`);
+            if (indicator) {
+                indicator.classList.add('show');
+            }
+
+            // Auto-save after 2 seconds of inactivity
+            autoSaveTimer = setTimeout(() => {
+                // Collect current step data
+                if (currentStep === 1) {
+                    applicationData.student = {
+                        fullName: document.getElementById('fullName').value,
+                        email: document.getElementById('email').value,
+                        passportNumber: document.getElementById('passportNumber').value,
+                        dateOfBirth: document.getElementById('dateOfBirth').value,
+                        nationality: document.getElementById('nationality').value,
+                        phone: document.getElementById('phone').value
+                    };
+                } else if (currentStep === 2) {
+                    applicationData.program = {
+                        url: document.getElementById('programUrl').value,
+                        intakeDate: document.getElementById('intakeDate').value,
+                        priority: document.getElementById('priority').value
+                    };
+                }
+
+                // Simulate API save
+                console.log('Auto-saving application data:', applicationData);
+
+                // Hide auto-save indicator after delay
+                setTimeout(() => {
+                    if (indicator) {
+                        indicator.classList.remove('show');
+                    }
+                }, 1000);
+            }, 2000);
+        }
+
+        // Add event listeners for auto-save
+        function addAutoSaveListeners() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', autoSave);
+                input.addEventListener('change', autoSave);
+            });
+        }
+
+        function updateUI() {
+            // Update step indicators
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+
+            // Update step label
+            const labels = ['Step 1: Student Profile', 'Step 2: Program Selection', 'Step 3: Document Upload'];
+            document.getElementById('stepLabel').textContent = labels[currentStep - 1] || '';
+
+            // Show/hide steps
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const sampleBtn = document.getElementById('sampleBtn');
+
+            prevBtn.style.display = currentStep === 1 ? 'none' : 'block';
+
+            if (currentStep === 1) {
+                nextBtn.textContent = 'Next: Program Selection';
+            } else if (currentStep === 2) {
+                nextBtn.textContent = 'Next: Documents';
+            } else if (currentStep === 3) {
+                nextBtn.textContent = 'Submit Application';
+                nextBtn.className = 'btn btn-success';
+            }
+
+            // Hide sample button on success step
+            if (currentStep === 4) {
+                sampleBtn.style.display = 'none';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function nextStep() {
+            if (currentStep === 3) {
+                // Submit application
+                submitApplication();
+                currentStep = 4; // Success step
+            } else if (currentStep < 3) {
+                // Validate current step
+                if (!validateCurrentStep()) {
+                    return;
+                }
+                currentStep++;
+            }
+
+            if (currentStep === 2) {
+                // Setup program URL listener
+                setupProgramUrlListener();
+            } else if (currentStep === 3) {
+                // Generate document requirements
+                generateDocumentRequirements();
+            }
+
+            updateUI();
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function validateCurrentStep() {
+            const requiredFields = {
+                1: ['fullName', 'email', 'passportNumber', 'dateOfBirth', 'nationality'],
+                2: ['programUrl', 'intakeDate']
+            };
+
+            const fields = requiredFields[currentStep] || [];
+            
+            // Clear previous errors
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+                const error = group.querySelector('.validation-error');
+                if (error) error.remove();
+            });
+
+            let isValid = true;
+
+            for (let fieldId of fields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    const formGroup = field.closest('.form-group');
+                    formGroup.classList.add('error');
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'validation-error';
+                    errorDiv.textContent = 'This field is required';
+                    formGroup.appendChild(errorDiv);
+                    
+                    isValid = false;
+                }
+            }
+
+            // Additional validations
+            if (currentStep === 1) {
+                const email = document.getElementById('email').value;
+                if (email && !/\S+@\S+\.\S+/.test(email)) {
+                    const formGroup = document.getElementById('email').closest('.form-group');
+                    formGroup.classList.add('error');
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'validation-error';
+                    errorDiv.textContent = 'Please enter a valid email address';
+                    formGroup.appendChild(errorDiv);
+                    
+                    isValid = false;
+                }
+            }
+
+            if (currentStep === 2) {
+                const url = document.getElementById('programUrl').value;
+                if (url) {
+                    try {
+                        new URL(url);
+                    } catch {
+                        const formGroup = document.getElementById('programUrl').closest('.form-group');
+                        formGroup.classList.add('error');
+                        
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'validation-error';
+                        errorDiv.textContent = 'Please enter a valid URL';
+                        formGroup.appendChild(errorDiv);
+                        
+                        isValid = false;
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function setupProgramUrlListener() {
+            const urlInput = document.getElementById('programUrl');
+            urlInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                if (url && isValidUrl(url)) {
+                    showProgramPreview(url);
+                } else {
+                    hideProgramPreview();
+                }
+                autoSave();
+            });
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function showProgramPreview(url) {
+            const program = samplePrograms[url];
+            
+            if (program) {
+                // Update program details
+                document.getElementById('universityName').textContent = program.university;
+                document.getElementById('programName').textContent = program.program;
+                document.getElementById('country').textContent = program.country;
+                document.getElementById('tuitionFee').textContent = `$${program.tuitionFee.toLocaleString()} ${program.currency}`;
+
+                // Show commission information
+                const commissionAmount = (program.tuitionFee * program.commission / 100);
+                document.getElementById('commissionAmount').textContent = `$${commissionAmount.toLocaleString()}`;
+                document.getElementById('commissionPercent').textContent = program.commission;
+
+                // Populate intake dates
+                const intakeSelect = document.getElementById('intakeDate');
+                intakeSelect.innerHTML = '<option value="">Select Intake</option>';
+                program.intakes.forEach(intake => {
+                    const option = document.createElement('option');
+                    option.value = intake;
+                    option.textContent = new Date(intake).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    intakeSelect.appendChild(option);
+                });
+
+                // Show preview sections
+                document.getElementById('programPreview').classList.add('show');
+                document.getElementById('commissionDisplay').style.display = 'block';
+
+                // Store program level for document requirements
+                applicationData.program.level = program.level;
+            } else {
+                // Simulate API call for unknown URLs
+                document.getElementById('universityName').textContent = 'Loading...';
+                document.getElementById('programName').textContent = 'Extracting program details...';
+                document.getElementById('country').textContent = 'Auto-detecting...';
+                document.getElementById('tuitionFee').textContent = 'Pending verification';
+
+                document.getElementById('commissionAmount').textContent = 'TBD';
+                document.getElementById('commissionPercent').textContent = '0';
+
+                document.getElementById('programPreview').classList.add('show');
+                document.getElementById('commissionDisplay').style.display = 'block';
+            }
+        }
+
+        function hideProgramPreview() {
+            document.getElementById('programPreview').classList.remove('show');
+            document.getElementById('commissionDisplay').style.display = 'none';
+        }
+
+        function generateDocumentRequirements() {
+            const programLevel = applicationData.program.level || 'Bachelor';
+            const nationality = applicationData.student.nationality;
+
+            // Required documents
+            const required = documentRequirements.required[programLevel] || [];
+            renderDocuments('requiredDocsGrid', required, 'required');
+
+            // Optional documents
+            const optional = documentRequirements.optional.all || [];
+            renderDocuments('optionalDocsGrid', optional, 'optional');
+
+            // Conditional documents (nationality-specific)
+            const conditional = documentRequirements.conditional[nationality] || [];
+            if (conditional.length > 0) {
+                document.getElementById('conditionalDocsSection').style.display = 'block';
+                renderDocuments('conditionalDocsGrid', conditional, 'conditional');
+            }
+        }
+
+        function renderDocuments(gridId, documents, type) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+
+            documents.forEach(docId => {
+                const docInfo = documentInfo[docId];
+                if (docInfo) {
+                    const docElement = document.createElement('div');
+                    docElement.className = `document-item ${type}`;
+                    docElement.innerHTML = `
+                        <span class="document-icon">${docInfo.icon}</span>
+                        <div class="document-name">${docInfo.name}</div>
+                        <div class="document-description">${docInfo.desc}</div>
+                        <div class="document-status status-${type}">${type}</div>
+                    `;
+                    
+                    docElement.addEventListener('click', () => uploadDocument(docId, docInfo.name));
+                    grid.appendChild(docElement);
+                }
+            });
+        }
+
+        function uploadDocument(docId, docName) {
+            const fileInput = document.getElementById('hiddenFileInput');
+            fileInput.setAttribute('data-doc-id', docId);
+            fileInput.setAttribute('data-doc-name', docName);
+            fileInput.click();
+
+            fileInput.onchange = function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    // Simulate upload
+                    console.log(`Uploading ${docName}:`, file);
+                    
+                    // Mark as uploaded in UI
+                    const docElements = document.querySelectorAll('.document-item');
+                    docElements.forEach(el => {
+                        if (el.querySelector('.document-name').textContent === docName) {
+                            el.classList.add('uploaded');
+                            el.querySelector('.document-status').textContent = 'uploaded';
+                            el.querySelector('.document-status').className = 'document-status status-uploaded';
+                        }
+                    });
+
+                    // Add to application data
+                    applicationData.documents.push({
+                        id: docId,
+                        name: docName,
+                        file: file,
+                        uploadedAt: new Date()
+                    });
+
+                    autoSave();
+                }
+            };
+        }
+
+        function submitApplication() {
+            // Generate tracking number
+            const trackingNumber = 'UNI' + new Date().getFullYear() + 
+                                 String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+            
+            document.getElementById('trackingNumber').textContent = trackingNumber;
+
+            // Final application data
+            const finalApplication = {
+                trackingNumber: trackingNumber,
+                student: applicationData.student,
+                program: applicationData.program,
+                documents: applicationData.documents,
+                submittedAt: new Date(),
+                status: 'new_application',
+                stage: 1
+            };
+
+            console.log('UNIBEXS V5 Application Submission:', finalApplication);
+        }
+
+        function fillSample() {
+            if (currentStep === 1) {
+                document.getElementById('fullName').value = 'Ahmed Hassan Mohammed';
+                document.getElementById('email').value = 'ahmed.hassan@email.com';
+                document.getElementById('passportNumber').value = 'SD123456789';
+                document.getElementById('dateOfBirth').value = '2000-05-15';
+                document.getElementById('nationality').value = 'Sudan';
+                document.getElementById('phone').value = '+966-123-456789';
+            } else if (currentStep === 2) {
+                const sampleUrls = Object.keys(samplePrograms);
+                const randomUrl = sampleUrls[Math.floor(Math.random() * sampleUrls.length)];
+                document.getElementById('programUrl').value = randomUrl;
+                showProgramPreview(randomUrl);
+                
+                // Set sample intake after a short delay to populate select
+                setTimeout(() => {
+                    const intakeSelect = document.getElementById('intakeDate');
+                    if (intakeSelect.options.length > 1) {
+                        intakeSelect.selectedIndex = 1;
+                    }
+                    document.getElementById('priority').value = 'high';
+                }, 100);
+            }
+            
+            autoSave();
+        }
+
+        function createNewApplication() {
+            location.reload();
+        }
+
+        function viewDashboard() {
+            alert('Redirecting to partner dashboard...');
+        }
+
+        // Initialize
+        updateUI();
+        addAutoSaveListeners();
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear UniBexs Storage</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        button { background: #2563eb; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .debug { background: #f3f4f6; padding: 10px; border-radius: 5px; margin-top: 20px; font-family: monospace; font-size: 12px; }
+        .success { color: #059669; }
+        .info { color: #2563eb; }
+    </style>
+</head>
+<body>
+    <h1>🔧 UniBexs Storage Management</h1>
+    <p>This utility will clear all stored application data and force a fresh initialization with the FINAL workflow fixes.</p>
+    
+    <h2>What This Fixes:</h2>
+    <ul>
+        <li>✅ Removes the duplicated offer letter upload step</li>
+        <li>✅ Makes university_approved directly transition to Stage 3</li>
+        <li>✅ Admin no longer sees ANY action button in Stage 3 (FIXED!)</li>
+        <li>✅ Partner sees "Upload Payment Proof" button in Stage 3</li>
+        <li>✅ Offer letter document now appears in documents section</li>
+        <li>✅ Complete workflow: University Approved → Stage 3 → Payment Upload</li>
+    </ul>
+    
+    <button onclick="clearStorage()">Clear Storage & Fix Data</button>
+    <button onclick="showDebugInfo()" style="margin-left: 10px; background: #6b7280;">Show Debug Info</button>
+    
+    <div id="result"></div>
+    <div id="debug" class="debug" style="display: none;"></div>
+
+    <script>
+        function showDebugInfo() {
+            const keys = [
+                'appleaction_applications',
+                'appleaction_partners',
+                'appleaction_students',
+                'appleaction_documents',
+                'appleaction_document_requests',
+                'appleaction_payments',
+                'appleaction_visa_records',
+                'appleaction_arrival_records',
+                'appleaction_commissions',
+                'appleaction_comments',
+                'appleaction_audit_log',
+                'appleaction_app_version'
+            ];
+
+            let debugInfo = '<h3>Current Storage Contents:</h3>';
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        debugInfo += `<strong>${key}:</strong> ${Array.isArray(parsed) ? parsed.length + ' items' : 'object'}<br>`;
+                    } catch {
+                        debugInfo += `<strong>${key}:</strong> ${data.length} chars<br>`;
+                    }
+                } else {
+                    debugInfo += `<strong>${key}:</strong> <em>not found</em><br>`;
+                }
+            });
+
+            document.getElementById('debug').innerHTML = debugInfo;
+            document.getElementById('debug').style.display = 'block';
+        }
+
+        function clearStorage() {
+            console.log('🧹 Starting comprehensive storage and cache clear...');
+            
+            // Clear all UniBexs-related localStorage keys
+            const keys = [
+                'appleaction_applications',
+                'appleaction_partners',
+                'appleaction_students',
+                'appleaction_documents',
+                'appleaction_document_requests',
+                'appleaction_payments',
+                'appleaction_visa_records',
+                'appleaction_arrival_records',
+                'appleaction_commissions',
+                'appleaction_comments',
+                'appleaction_audit_log',
+                'appleaction_app_version'
+            ];
+
+            // Clear localStorage
+            let clearedCount = 0;
+            let clearedItems = [];
+            keys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    clearedCount++;
+                    clearedItems.push(key);
+                }
+            });
+            
+            // Also clear any other localStorage items that might be cached
+            try {
+                const allLocalStorageKeys = Object.keys(localStorage);
+                allLocalStorageKeys.forEach(key => {
+                    if (key.includes('unibexs') || key.includes('apple') || key.includes('workflow')) {
+                        localStorage.removeItem(key);
+                        if (!clearedItems.includes(key)) {
+                            clearedItems.push(key);
+                            clearedCount++;
+                        }
+                    }
+                });
+            } catch (e) {
+                console.log('Note: Some localStorage keys could not be cleared:', e);
+            }
+            
+            // Clear sessionStorage as well
+            let sessionCleared = 0;
+            try {
+                const sessionKeys = Object.keys(sessionStorage);
+                sessionKeys.forEach(key => {
+                    if (key.includes('unibexs') || key.includes('apple') || key.includes('workflow')) {
+                        sessionStorage.removeItem(key);
+                        sessionCleared++;
+                    }
+                });
+                if (sessionKeys.length > 0) {
+                    sessionStorage.clear(); // Clear everything to be safe
+                    sessionCleared = sessionKeys.length;
+                }
+            } catch (e) {
+                console.log('Note: SessionStorage could not be cleared:', e);
+            }
+            
+            // Force cache clearing by updating a cache-busting timestamp
+            localStorage.setItem('cache_bust_timestamp', Date.now().toString());
+            
+            console.log(`✅ Cleared ${clearedCount} localStorage items and ${sessionCleared} sessionStorage items`);
+
+            document.getElementById('result').innerHTML = `
+                <div style="border: 2px solid #059669; background: #ecfdf5; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h3 class="success">🧹 Complete Storage & Cache Cleared Successfully!</h3>
+                    <p><strong>✅ Cleared ${clearedCount} localStorage items</strong></p>
+                    <p><strong>✅ Cleared ${sessionCleared} sessionStorage items</strong></p>
+                    <p><strong>✅ Cache-busting timestamp updated</strong></p>
+                    
+                    <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 5px; padding: 10px; margin: 10px 0;">
+                        <p><strong>🚀 Auto-redirect in 3 seconds...</strong></p>
+                        <button onclick="goToApp()" style="background: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                            Go to App Now
+                        </button>
+                        <button onclick="location.reload(true)" style="background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                            Stay Here
+                        </button>
+                    </div>
+                    
+                    <details style="margin-top: 15px;">
+                        <summary style="cursor: pointer; font-weight: bold;">📋 What was cleared</summary>
+                        <ul style="margin-top: 10px;">${clearedItems.map(item => '<li>' + item + '</li>').join('')}</ul>
+                    </details>
+                    
+                    <h4 class="info" style="margin-top: 20px;">🎯 Expected Workflow After Reset:</h4>
+                    <div style="background: #fffbeb; border: 1px solid #f59e0b; border-radius: 5px; padding: 10px; margin-top: 10px;">
+                        <p><strong>✅ Partner Upload Flow:</strong></p>
+                        <ol>
+                            <li>Partner clicks "Upload Payment Proof"</li>
+                            <li>Modal shows visa payment requirement</li>
+                            <li>After upload → Status changes to "Payment Received"</li>
+                        </ol>
+                        
+                        <p><strong>✅ Admin Review Flow:</strong></p>
+                        <ol>
+                            <li>Admin sees "Submit to Immigration" button</li>
+                            <li>Click button → Status changes immediately</li>
+                            <li>Partner sees updated status automatically</li>
+                        </ol>
+                    </div>
+                </div>
+            `;
+            
+            // Auto-redirect after 3 seconds
+            setTimeout(() => {
+                goToApp();
+            }, 3000);
+        }
+        
+        function goToApp() {
+            console.log('🚀 Redirecting to application with cache bust...');
+            // Add cache-busting parameter to force fresh load
+            const timestamp = Date.now();
+            const appUrl = `http://localhost:3005?cb=${timestamp}`;
+            window.location.href = appUrl;
+        }
+        
+        // Add keyboard shortcut: Cmd+R (Mac) or Ctrl+R (Windows/Linux)
+        document.addEventListener('keydown', function(event) {
+            // Check for Cmd+R (Mac) or Ctrl+R (Windows/Linux)
+            if ((event.metaKey || event.ctrlKey) && event.key === 'r') {
+                event.preventDefault(); // Prevent default browser refresh
+                console.log('🎯 Keyboard shortcut detected: Clearing storage and redirecting...');
+                clearStorage();
+            }
+        });
+        
+        // Show keyboard shortcut hint
+        document.addEventListener('DOMContentLoaded', function() {
+            const hint = document.createElement('div');
+            hint.style.cssText = `
+                position: fixed; 
+                bottom: 20px; 
+                right: 20px; 
+                background: #1f2937; 
+                color: white; 
+                padding: 12px 16px; 
+                border-radius: 8px; 
+                font-size: 14px; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+            `;
+            hint.innerHTML = '💡 Press <kbd style="background: #374151; padding: 2px 6px; border-radius: 4px;">Cmd+R</kbd> to clear & refresh!';
+            document.body.appendChild(hint);
+        });
+    </script>
+</body>
+</html>

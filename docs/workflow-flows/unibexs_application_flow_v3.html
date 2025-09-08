@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIBEXS V3 - Smart Application Flow with Returning Students</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .progress-container {
+            margin-top: 24px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .progress-step.completed {
+            background: #10b981;
+        }
+
+        .progress-step.skipped {
+            background: #6b7280;
+            opacity: 0.6;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 12px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%);
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .step-label {
+            text-align: center;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .form-container {
+            padding: 32px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        /* Student Identification Styles */
+        .student-choice {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .choice-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .choice-card:hover {
+            border-color: #667eea;
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .choice-card.selected {
+            border-color: #667eea;
+            background: #e0e7ff;
+        }
+
+        .choice-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .choice-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .choice-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .search-section {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            display: none;
+        }
+
+        .search-section.show {
+            display: block;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 48px 16px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .search-results {
+            margin-top: 16px;
+        }
+
+        .student-result {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .student-result:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-details h4 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .student-meta {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .applications-count {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            display: none;
+        }
+
+        .welcome-section.show {
+            display: block;
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .previous-applications {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .app-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-history-item:last-child {
+            border-bottom: none;
+        }
+
+        .app-details {
+            flex-grow: 1;
+        }
+
+        .app-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .app-status {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .student-summary {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .student-summary.show {
+            display: block;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .edit-info-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        /* Standard form styles from V2 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .field-note {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .commission-display {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .commission-display h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .commission-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .program-preview {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .program-preview.show {
+            display: block;
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .program-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .auto-save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .tracking-info {
+            background: #f0fdf4;
+            border: 1px solid #22c55e;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .tracking-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #15803d;
+            margin: 8px 0;
+        }
+
+        .next-steps {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .next-steps h4 {
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .next-steps ul {
+            color: #6b7280;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .student-choice {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row, 
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 5px;
+                border-radius: 12px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px 24px;
+            }
+
+            .progress-steps {
+                gap: 8px;
+            }
+
+            .progress-step {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+
+            .choice-card {
+                padding: 24px 16px;
+            }
+
+            .choice-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        .validation-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>UNIBEXS V3 Application System</h1>
+            <p>Smart Application Flow with Returning Student Support</p>
+            
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-step active" id="step0Indicator">👤</div>
+                    <div class="progress-step" id="step1Indicator">📝</div>
+                    <div class="progress-step" id="step2Indicator">🎓</div>
+                    <div class="progress-step" id="step3Indicator">📄</div>
+                </div>
+                <div class="step-label" id="stepLabel">Step 0: Student Identification</div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Step 0: Student Identification -->
+            <div class="step active" id="step0">
+                <h2 class="step-title">Welcome to UNIBEXS</h2>
+                <p class="step-description">Let's identify if you're a new or returning student to provide the best experience.</p>
+
+                <div class="student-choice">
+                    <div class="choice-card" id="newStudentCard" onclick="selectStudentType('new')">
+                        <span class="choice-icon">🆕</span>
+                        <div class="choice-title">New Student</div>
+                        <div class="choice-description">First time applying with us? Start with creating your profile.</div>
+                    </div>
+                    <div class="choice-card" id="returningStudentCard" onclick="selectStudentType('returning')">
+                        <span class="choice-icon">🔄</span>
+                        <div class="choice-title">Returning Student</div>
+                        <div class="choice-description">Applied with us before? Let's find your profile quickly.</div>
+                    </div>
+                </div>
+
+                <div class="search-section" id="studentSearchSection">
+                    <h3 style="margin-bottom: 16px; color: #0369a1;">🔍 Find Your Profile</h3>
+                    <p style="color: #0369a1; margin-bottom: 20px; font-size: 0.9rem;">
+                        Enter your passport number, email, or phone number to find your existing profile.
+                    </p>
+                    
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="studentSearch" 
+                               placeholder="Enter passport number, email, or phone..." 
+                               onkeyup="handleSearchInput(event)">
+                        <button class="search-button" onclick="searchStudent()">🔍</button>
+                    </div>
+
+                    <div class="search-results" id="searchResults"></div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="selectStudentType('new')">
+                            Not found? Create new profile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="welcome-section" id="welcomeSection">
+                    <div class="welcome-title" id="welcomeTitle">Welcome back, Ahmed!</div>
+                    <div class="welcome-subtitle" id="welcomeSubtitle">Great to see you applying for another program.</div>
+                    
+                    <div class="previous-applications">
+                        <h4 style="margin-bottom: 12px; opacity: 0.9;">Your Previous Applications</h4>
+                        <div id="applicationHistory">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="student-summary" id="studentSummary">
+                    <h3 style="margin-bottom: 12px; color: #1f2937;">Your Information</h3>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 16px;">
+                        We'll use your existing information. Click "Edit Info" if anything needs updating.
+                    </p>
+                    
+                    <div class="summary-grid" id="summaryGrid">
+                        <!-- Dynamically populated -->
+                    </div>
+
+                    <button class="edit-info-btn" id="editInfoBtn" onclick="toggleEditMode()">
+                        Edit Information
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 1: Student Profile (New Students Only or Edit Mode) -->
+            <div class="step" id="step1">
+                <h2 class="step-title" id="step1Title">Student Profile</h2>
+                <p class="step-description" id="step1Description">Create a student record with basic information.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name (as per passport) <span class="required">*</span></label>
+                        <input type="text" id="fullName" required>
+                        <div class="field-note">Must match passport exactly</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Passport Number <span class="required">*</span></label>
+                        <input type="text" id="passportNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth <span class="required">*</span></label>
+                        <input type="date" id="dateOfBirth" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nationality <span class="required">*</span></label>
+                        <select id="nationality" required>
+                            <option value="">Select Nationality</option>
+                            <option value="Sudan">Sudan</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="UAE">United Arab Emirates</option>
+                            <option value="Oman">Oman</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="Jordan">Jordan</option>
+                            <option value="Yemen">Yemen</option>
+                            <option value="Libya">Libya</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone">
+                        <div class="field-note">Include country code (e.g., +966)</div>
+                    </div>
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep1">
+                    <div class="loading-spinner"></div>
+                    <span>Auto-saving...</span>
+                </div>
+            </div>
+
+            <!-- Step 2: Program Selection -->
+            <div class="step" id="step2">
+                <h2 class="step-title">Program Selection</h2>
+                <p class="step-description">Find your program with commission transparency. See exactly what you'll earn before applying.</p>
+
+                <div class="form-group">
+                    <label>Program URL <span class="required">*</span></label>
+                    <input type="url" id="programUrl" placeholder="https://university.edu/programs/bachelor-computer-science" required>
+                    <div class="field-note">Paste the direct link to the university program page</div>
+                </div>
+
+                <div class="program-preview" id="programPreview">
+                    <h3 style="margin-bottom: 16px;">📚 Program Information</h3>
+                    <div class="program-details">
+                        <div class="detail-item">
+                            <div class="detail-label">University</div>
+                            <div class="detail-value" id="universityName">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Program</div>
+                            <div class="detail-value" id="programName">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Country</div>
+                            <div class="detail-value" id="country">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tuition Fee</div>
+                            <div class="detail-value" id="tuitionFee">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="commission-display" id="commissionDisplay" style="display: none;">
+                    <h3>💰 Your Commission</h3>
+                    <div class="commission-amount" id="commissionAmount">$0</div>
+                    <p><span id="commissionPercent">0</span>% commission on successful enrollment</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intended Intake <span class="required">*</span></label>
+                        <select id="intakeDate" required>
+                            <option value="">Select Intake</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority Level</label>
+                        <select id="priority">
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep2">
+                    <div class="loading-spinner"></div>
+                    <span>Auto-saving program selection...</span>
+                </div>
+            </div>
+
+            <!-- Step 3: Document Upload -->
+            <div class="step" id="step3">
+                <h2 class="step-title">Document Upload</h2>
+                <p class="step-description">Upload required documents. We'll reuse valid documents from your previous applications when possible.</p>
+
+                <div id="documentReuseBanner" class="welcome-section" style="display: none;">
+                    <h3 style="margin-bottom: 12px;">📋 Document Reuse Available</h3>
+                    <p style="margin-bottom: 16px; opacity: 0.9;">
+                        We found <span id="reusableDocCount">0</span> valid documents from your previous applications.
+                    </p>
+                    <div id="reusableDocuments">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <button class="btn btn-secondary" onclick="useExistingDocuments()" style="margin-top: 12px;">
+                        Use Existing Documents
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload New Documents</label>
+                    <div style="background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; padding: 32px; text-align: center; cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size: 2rem; margin-bottom: 16px;">📁</div>
+                        <p style="font-weight: 600; margin-bottom: 8px;">Click to upload documents</p>
+                        <p style="color: #6b7280; font-size: 0.875rem;">PDF, DOC, JPG, PNG files supported</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.png" style="display: none;">
+                </div>
+
+                <div id="uploadedDocuments" style="margin-top: 20px;">
+                    <!-- Uploaded documents will appear here -->
+                </div>
+
+                <div class="auto-save-indicator" id="autoSaveStep3">
+                    <div class="loading-spinner"></div>
+                    <span>Saving document uploads...</span>
+                </div>
+            </div>
+
+            <!-- Success Step -->
+            <div class="step" id="successStep">
+                <div class="success-page">
+                    <div class="success-icon">✓</div>
+                    <h2 class="success-title">Application Submitted Successfully!</h2>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Your application has been created and is ready for admin review.</p>
+                    
+                    <div class="tracking-info">
+                        <p><strong>Tracking Number:</strong></p>
+                        <div class="tracking-number" id="trackingNumber">UNI2024123456</div>
+                    </div>
+
+                    <div class="next-steps">
+                        <h4>What happens next:</h4>
+                        <ul>
+                            <li>Admin will be automatically assigned to review your application</li>
+                            <li>Program URL will be verified for accuracy</li>
+                            <li>Document review process begins within 24 hours</li>
+                            <li>You'll receive email updates on application progress</li>
+                            <li>Commission tracking will be activated upon student enrollment</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 32px;">
+                        <button class="btn btn-primary" onclick="createNewApplication()">Create Another Application</button>
+                        <button class="btn btn-secondary" onclick="viewDashboard()">View Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                    Previous
+                </button>
+                <div>
+                    <button class="btn btn-secondary" onclick="fillSample()" id="sampleBtn">Fill Sample Data</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let currentStep = 0; // Start with student identification
+        let studentType = null; // 'new' or 'returning'
+        let selectedStudent = null; // For returning students
+        let editMode = false; // For editing existing student info
+        let applicationData = {
+            student: {},
+            program: {},
+            documents: [],
+            session: null
+        };
+
+        // Sample students data (simulating database)
+        const existingStudents = [
+            {
+                id: 'stud1111-1111-1111-1111-111111111111',
+                fullName: 'Ahmed Hassan Mohammed',
+                email: 'ahmed.hassan@email.com',
+                passportNumber: 'SD123456789',
+                phone: '+966-123-456789',
+                nationality: 'Sudan',
+                dateOfBirth: '2000-05-15',
+                applicationsCount: 2,
+                applications: [
+                    {
+                        id: 'app1',
+                        program: 'UTM Computer Science',
+                        status: 'Enrolled',
+                        stage: 5,
+                        university: 'University of Technology Malaysia',
+                        submittedAt: '2023-01-15'
+                    },
+                    {
+                        id: 'app2',
+                        program: 'Monash Business',
+                        status: 'Under Review',
+                        stage: 1,
+                        university: 'Monash University Malaysia',
+                        submittedAt: '2024-08-20'
+                    }
+                ],
+                documents: [
+                    { type: 'passport_scan', name: 'Passport Bio Page', valid: true, expiresAt: '2025-05-15' },
+                    { type: 'birth_certificate', name: 'Birth Certificate', valid: true, expiresAt: null },
+                    { type: 'english_cert', name: 'IELTS Certificate', valid: false, expiresAt: '2024-03-10' }
+                ]
+            },
+            {
+                id: 'stud2222-2222-2222-2222-222222222222',
+                fullName: 'Fatima Al-Rashid',
+                email: 'fatima.rashid@email.com',
+                passportNumber: 'OM987654321',
+                phone: '+968-987-654321',
+                nationality: 'Oman',
+                dateOfBirth: '1999-12-03',
+                applicationsCount: 1,
+                applications: [
+                    {
+                        id: 'app3',
+                        program: 'Taylor AI Program',
+                        status: 'Visa Processing',
+                        stage: 3,
+                        university: 'Taylor\'s University',
+                        submittedAt: '2024-05-10'
+                    }
+                ],
+                documents: [
+                    { type: 'passport_scan', name: 'Passport Bio Page', valid: true, expiresAt: '2026-12-03' },
+                    { type: 'high_school_cert', name: 'High School Certificate', valid: true, expiresAt: null }
+                ]
+            }
+        ];
+
+        // Sample program data with commission rates
+        const samplePrograms = {
+            'https://www.utm.my/academic/faculty-of-computing/bachelor-of-computer-science/': {
+                university: 'University of Technology Malaysia',
+                program: 'Bachelor of Computer Science',
+                level: 'Bachelor',
+                country: 'Malaysia',
+                tuitionFee: 25000,
+                commission: 12.0,
+                currency: 'USD',
+                intakes: ['2024-09-01', '2025-01-15', '2025-05-01']
+            },
+            'https://www.monash.edu.my/study/undergraduate/courses/business-administration': {
+                university: 'Monash University Malaysia',
+                program: 'Bachelor of Business Administration', 
+                level: 'Bachelor',
+                country: 'Malaysia',
+                tuitionFee: 35000,
+                commission: 15.0,
+                currency: 'USD',
+                intakes: ['2024-07-01', '2024-11-01', '2025-03-01']
+            }
+        };
+
+        function selectStudentType(type) {
+            studentType = type;
+            
+            // Update UI
+            document.querySelectorAll('.choice-card').forEach(card => card.classList.remove('selected'));
+            
+            if (type === 'new') {
+                document.getElementById('newStudentCard').classList.add('selected');
+                document.getElementById('studentSearchSection').classList.remove('show');
+                document.getElementById('welcomeSection').classList.remove('show');
+                document.getElementById('studentSummary').classList.remove('show');
+            } else {
+                document.getElementById('returningStudentCard').classList.add('selected');
+                document.getElementById('studentSearchSection').classList.add('show');
+                document.getElementById('welcomeSection').classList.remove('show');
+                document.getElementById('studentSummary').classList.remove('show');
+            }
+        }
+
+        function handleSearchInput(event) {
+            if (event.key === 'Enter') {
+                searchStudent();
+            }
+        }
+
+        function searchStudent() {
+            const query = document.getElementById('studentSearch').value.trim().toLowerCase();
+            if (!query) return;
+
+            const results = existingStudents.filter(student => 
+                student.fullName.toLowerCase().includes(query) ||
+                student.email.toLowerCase().includes(query) ||
+                student.passportNumber.toLowerCase().includes(query) ||
+                student.phone.includes(query)
+            );
+
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(students) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (students.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6b7280;">
+                        <p>No student found with that information.</p>
+                        <button class="btn btn-primary" onclick="selectStudentType('new')" style="margin-top: 12px;">
+                            Create New Profile
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = students.map(student => `
+                <div class="student-result" onclick="selectStudent('${student.id}')">
+                    <div class="student-info">
+                        <div class="student-details">
+                            <h4>${student.fullName}</h4>
+                            <div class="student-meta">
+                                ${student.nationality} • ${student.email} • ${student.passportNumber}
+                            </div>
+                        </div>
+                        <div class="applications-count">
+                            ${student.applicationsCount} applications
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectStudent(studentId) {
+            selectedStudent = existingStudents.find(s => s.id === studentId);
+            
+            if (selectedStudent) {
+                // Hide search section
+                document.getElementById('studentSearchSection').classList.remove('show');
+                
+                // Show welcome section
+                document.getElementById('welcomeTitle').textContent = `Welcome back, ${selectedStudent.fullName.split(' ')[0]}!`;
+                document.getElementById('welcomeSubtitle').textContent = `Great to see you applying for another program.`;
+                document.getElementById('welcomeSection').classList.add('show');
+                
+                // Show application history
+                displayApplicationHistory(selectedStudent.applications);
+                
+                // Show student summary
+                displayStudentSummary(selectedStudent);
+                document.getElementById('studentSummary').classList.add('show');
+                
+                // Pre-fill application data
+                applicationData.student = {
+                    id: selectedStudent.id,
+                    fullName: selectedStudent.fullName,
+                    email: selectedStudent.email,
+                    passportNumber: selectedStudent.passportNumber,
+                    dateOfBirth: selectedStudent.dateOfBirth,
+                    nationality: selectedStudent.nationality,
+                    phone: selectedStudent.phone
+                };
+            }
+        }
+
+        function displayApplicationHistory(applications) {
+            const historyContainer = document.getElementById('applicationHistory');
+            
+            historyContainer.innerHTML = applications.map(app => `
+                <div class="app-history-item">
+                    <div class="app-details">
+                        <div class="app-name">${app.program}</div>
+                        <div class="app-status">${app.university} • ${new Date(app.submittedAt).toLocaleDateString()}</div>
+                    </div>
+                    <div class="status-badge">
+                        ${app.status}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayStudentSummary(student) {
+            const summaryGrid = document.getElementById('summaryGrid');
+            
+            summaryGrid.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Full Name</div>
+                    <div class="summary-value">${student.fullName}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Email</div>
+                    <div class="summary-value">${student.email}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Passport</div>
+                    <div class="summary-value">${student.passportNumber}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Nationality</div>
+                    <div class="summary-value">${student.nationality}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Date of Birth</div>
+                    <div class="summary-value">${new Date(student.dateOfBirth).toLocaleDateString()}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Phone</div>
+                    <div class="summary-value">${student.phone}</div>
+                </div>
+            `;
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            
+            if (editMode) {
+                // Pre-fill form with existing data
+                document.getElementById('fullName').value = selectedStudent.fullName;
+                document.getElementById('email').value = selectedStudent.email;
+                document.getElementById('passportNumber').value = selectedStudent.passportNumber;
+                document.getElementById('dateOfBirth').value = selectedStudent.dateOfBirth;
+                document.getElementById('nationality').value = selectedStudent.nationality;
+                document.getElementById('phone').value = selectedStudent.phone;
+                
+                // Update step 1 for editing
+                document.getElementById('step1Title').textContent = 'Edit Your Information';
+                document.getElementById('step1Description').textContent = 'Update any information that has changed.';
+                
+                // Go to step 1
+                currentStep = 1;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Update step indicators
+            const stepLabels = [
+                'Student Identification',
+                'Student Profile', 
+                'Program Selection',
+                'Document Upload'
+            ];
+            
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed', 'skipped');
+                if (index === currentStep) {
+                    step.classList.add('active');
+                } else if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (studentType === 'returning' && index === 1 && !editMode) {
+                    step.classList.add('skipped');
+                }
+            });
+
+            // Update step label
+            document.getElementById('stepLabel').textContent = `Step ${currentStep}: ${stepLabels[currentStep] || ''}`;
+
+            // Show/hide steps
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active');
+                if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const sampleBtn = document.getElementById('sampleBtn');
+
+            prevBtn.style.display = currentStep === 0 ? 'none' : 'block';
+
+            if (currentStep === 0) {
+                nextBtn.textContent = 'Continue';
+            } else if (currentStep === 1) {
+                nextBtn.textContent = 'Next: Program Selection';
+            } else if (currentStep === 2) {
+                nextBtn.textContent = 'Next: Documents';
+            } else if (currentStep === 3) {
+                nextBtn.textContent = 'Submit Application';
+                nextBtn.className = 'btn btn-success';
+            }
+
+            // Hide sample button on success step
+            if (currentStep === 4) {
+                sampleBtn.style.display = 'none';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            }
+
+            // Setup step-specific functionality
+            if (currentStep === 2) {
+                setupProgramUrlListener();
+            } else if (currentStep === 3) {
+                setupDocumentReuse();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep === 0) {
+                if (!studentType) {
+                    alert('Please select if you\'re a new or returning student.');
+                    return;
+                }
+                
+                if (studentType === 'returning' && !selectedStudent && !editMode) {
+                    alert('Please search and select your profile, or choose "New Student" to create a new profile.');
+                    return;
+                }
+                
+                // Skip step 1 for returning students (unless in edit mode)
+                if (studentType === 'returning' && !editMode) {
+                    currentStep = 2;
+                } else {
+                    currentStep = 1;
+                }
+            } else if (currentStep === 1) {
+                if (!validateCurrentStep()) {
+                    return;
+                }
+                currentStep = 2;
+            } else if (currentStep === 2) {
+                if (!validateCurrentStep()) {
+                    return;
+                }
+                currentStep = 3;
+            } else if (currentStep === 3) {
+                // Submit application
+                submitApplication();
+                currentStep = 4; // Success step
+            }
+
+            updateUI();
+        }
+
+        function previousStep() {
+            if (currentStep > 0) {
+                if (currentStep === 2 && studentType === 'returning' && !editMode) {
+                    // Go back to step 0 for returning students
+                    currentStep = 0;
+                } else {
+                    currentStep--;
+                }
+                updateUI();
+            }
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const requiredFields = ['fullName', 'email', 'passportNumber', 'dateOfBirth', 'nationality'];
+                
+                // Clear previous errors
+                document.querySelectorAll('.form-group').forEach(group => {
+                    group.classList.remove('error');
+                    const error = group.querySelector('.validation-error');
+                    if (error) error.remove();
+                });
+
+                let isValid = true;
+
+                for (let fieldId of requiredFields) {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        const formGroup = field.closest('.form-group');
+                        formGroup.classList.add('error');
+                        
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'validation-error';
+                        errorDiv.textContent = 'This field is required';
+                        formGroup.appendChild(errorDiv);
+                        
+                        isValid = false;
+                    }
+                }
+
+                // Additional validations
+                const email = document.getElementById('email').value;
+                if (email && !/\S+@\S+\.\S+/.test(email)) {
+                    const formGroup = document.getElementById('email').closest('.form-group');
+                    formGroup.classList.add('error');
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'validation-error';
+                    errorDiv.textContent = 'Please enter a valid email address';
+                    formGroup.appendChild(errorDiv);
+                    
+                    isValid = false;
+                }
+
+                // Update application data
+                if (isValid) {
+                    applicationData.student = {
+                        fullName: document.getElementById('fullName').value,
+                        email: document.getElementById('email').value,
+                        passportNumber: document.getElementById('passportNumber').value,
+                        dateOfBirth: document.getElementById('dateOfBirth').value,
+                        nationality: document.getElementById('nationality').value,
+                        phone: document.getElementById('phone').value
+                    };
+                }
+
+                return isValid;
+            } else if (currentStep === 2) {
+                const url = document.getElementById('programUrl').value;
+                const intakeDate = document.getElementById('intakeDate').value;
+                
+                if (!url.trim() || !intakeDate) {
+                    alert('Please enter a program URL and select an intake date.');
+                    return false;
+                }
+                
+                try {
+                    new URL(url);
+                } catch {
+                    alert('Please enter a valid URL');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            return true;
+        }
+
+        function setupProgramUrlListener() {
+            const urlInput = document.getElementById('programUrl');
+            urlInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                if (url && isValidUrl(url)) {
+                    showProgramPreview(url);
+                } else {
+                    hideProgramPreview();
+                }
+            });
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function showProgramPreview(url) {
+            const program = samplePrograms[url];
+            
+            if (program) {
+                // Update program details
+                document.getElementById('universityName').textContent = program.university;
+                document.getElementById('programName').textContent = program.program;
+                document.getElementById('country').textContent = program.country;
+                document.getElementById('tuitionFee').textContent = `$${program.tuitionFee.toLocaleString()} ${program.currency}`;
+
+                // Show commission information
+                const commissionAmount = (program.tuitionFee * program.commission / 100);
+                document.getElementById('commissionAmount').textContent = `$${commissionAmount.toLocaleString()}`;
+                document.getElementById('commissionPercent').textContent = program.commission;
+
+                // Populate intake dates
+                const intakeSelect = document.getElementById('intakeDate');
+                intakeSelect.innerHTML = '<option value="">Select Intake</option>';
+                program.intakes.forEach(intake => {
+                    const option = document.createElement('option');
+                    option.value = intake;
+                    option.textContent = new Date(intake).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    intakeSelect.appendChild(option);
+                });
+
+                // Show preview sections
+                document.getElementById('programPreview').classList.add('show');
+                document.getElementById('commissionDisplay').style.display = 'block';
+
+                // Store program level for document requirements
+                applicationData.program.level = program.level;
+            }
+        }
+
+        function hideProgramPreview() {
+            document.getElementById('programPreview').classList.remove('show');
+            document.getElementById('commissionDisplay').style.display = 'none';
+        }
+
+        function setupDocumentReuse() {
+            if (selectedStudent && selectedStudent.documents) {
+                const validDocs = selectedStudent.documents.filter(doc => doc.valid);
+                
+                if (validDocs.length > 0) {
+                    document.getElementById('reusableDocCount').textContent = validDocs.length;
+                    
+                    const reusableContainer = document.getElementById('reusableDocuments');
+                    reusableContainer.innerHTML = validDocs.map(doc => `
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; margin: 4px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.9rem;">📄 ${doc.name}</span>
+                            <span style="font-size: 0.8rem; opacity: 0.8;">Valid ${doc.expiresAt ? `until ${new Date(doc.expiresAt).toLocaleDateString()}` : ''}</span>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('documentReuseBanner').style.display = 'block';
+                }
+            }
+        }
+
+        function useExistingDocuments() {
+            if (selectedStudent && selectedStudent.documents) {
+                const validDocs = selectedStudent.documents.filter(doc => doc.valid);
+                applicationData.documents = validDocs.map(doc => ({
+                    ...doc,
+                    reused: true
+                }));
+                
+                alert(`${validDocs.length} valid documents have been added to your application.`);
+                document.getElementById('documentReuseBanner').style.display = 'none';
+            }
+        }
+
+        function submitApplication() {
+            // Generate tracking number
+            const trackingNumber = 'UNI' + new Date().getFullYear() + 
+                                 String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+            
+            document.getElementById('trackingNumber').textContent = trackingNumber;
+
+            // Final application data
+            const finalApplication = {
+                trackingNumber: trackingNumber,
+                student: applicationData.student,
+                program: {
+                    url: document.getElementById('programUrl').value,
+                    intakeDate: document.getElementById('intakeDate').value,
+                    priority: document.getElementById('priority').value
+                },
+                documents: applicationData.documents,
+                isReturningStudent: studentType === 'returning',
+                submittedAt: new Date(),
+                status: 'new_application',
+                stage: 1
+            };
+
+            console.log('UNIBEXS V3 Application Submission:', finalApplication);
+        }
+
+        function fillSample() {
+            if (currentStep === 0) {
+                // Auto-select returning student and simulate search
+                selectStudentType('returning');
+                document.getElementById('studentSearch').value = 'ahmed';
+                searchStudent();
+                setTimeout(() => {
+                    selectStudent('stud1111-1111-1111-1111-111111111111');
+                }, 100);
+            } else if (currentStep === 1) {
+                document.getElementById('fullName').value = 'Ahmed Hassan Mohammed';
+                document.getElementById('email').value = 'ahmed.hassan@email.com';
+                document.getElementById('passportNumber').value = 'SD123456789';
+                document.getElementById('dateOfBirth').value = '2000-05-15';
+                document.getElementById('nationality').value = 'Sudan';
+                document.getElementById('phone').value = '+966-123-456789';
+            } else if (currentStep === 2) {
+                const sampleUrls = Object.keys(samplePrograms);
+                const randomUrl = sampleUrls[Math.floor(Math.random() * sampleUrls.length)];
+                document.getElementById('programUrl').value = randomUrl;
+                showProgramPreview(randomUrl);
+                
+                setTimeout(() => {
+                    const intakeSelect = document.getElementById('intakeDate');
+                    if (intakeSelect.options.length > 1) {
+                        intakeSelect.selectedIndex = 1;
+                    }
+                    document.getElementById('priority').value = 'high';
+                }, 100);
+            }
+        }
+
+        function createNewApplication() {
+            location.reload();
+        }
+
+        function viewDashboard() {
+            alert('Redirecting to partner dashboard...');
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>

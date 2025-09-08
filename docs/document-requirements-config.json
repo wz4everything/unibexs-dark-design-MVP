@@ -1,0 +1,512 @@
+{
+  "version": "v5.0",
+  "lastUpdated": "2024-08-30",
+  "source": "Excel: Requirement Bank (Admissions & Visa).xlsx",
+  "description": "Standardized document requirements for UNIBEXS application system",
+  
+  "documentRequirements": {
+    "admission": {
+      "phase": "Admission",
+      "description": "Documents required for university application submission",
+      "documents": [
+        {
+          "id": "passport_scan",
+          "name": "Passport Scan", 
+          "description": "Clear scan of passport bio page - must be valid",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 1,
+          "validationRules": {
+            "clarity": "Must be clear and readable",
+            "validity": "Passport must be valid for at least 6 months",
+            "completePage": "Must show complete bio page"
+          }
+        },
+        {
+          "id": "high_school_cert",
+          "name": "High School Certificate / Transcript",
+          "description": "Official high school graduation documents - minimum to issue offer letter",
+          "programLevels": ["Foundation", "Bachelor"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx", "jpg", "png"],
+          "maxSizeMB": 10,
+          "displayOrder": 2,
+          "validationRules": {
+            "official": "Must be official certified documents",
+            "language": "English translation required if not in English",
+            "completeness": "Must include all subjects and grades"
+          }
+        },
+        {
+          "id": "bachelor_cert",
+          "name": "Bachelor's Certificate + Transcript",
+          "description": "Official bachelor degree documents - academic history for postgrad",
+          "programLevels": ["Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx", "jpg", "png"],
+          "maxSizeMB": 10,
+          "displayOrder": 3,
+          "validationRules": {
+            "official": "Must be official certified documents",
+            "language": "English translation required if not in English",
+            "gpa": "Must show GPA or equivalent grading system"
+          }
+        },
+        {
+          "id": "master_cert", 
+          "name": "Master's Certificate + Transcript",
+          "description": "Official master degree documents - required for PhD admission",
+          "programLevels": ["PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx", "jpg", "png"],
+          "maxSizeMB": 10,
+          "displayOrder": 4,
+          "validationRules": {
+            "official": "Must be official certified documents",
+            "language": "English translation required if not in English", 
+            "thesis": "Include thesis title if applicable"
+          }
+        },
+        {
+          "id": "english_cert",
+          "name": "English Certificate (IELTS/MUET/etc.)",
+          "description": "English proficiency test results - required for unconditional offer",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 5,
+          "acceptedTests": ["IELTS", "TOEFL", "MUET", "PTE", "Duolingo", "Cambridge"],
+          "validationRules": {
+            "validity": "Test must be valid (within 2 years)",
+            "minimumScore": "Must meet university minimum requirements",
+            "allSkills": "Must show scores for all skills (reading, writing, listening, speaking)"
+          }
+        },
+        {
+          "id": "statement_purpose",
+          "name": "Statement of Purpose",
+          "description": "Personal statement for graduate programs - especially for coursework or research programs",
+          "programLevels": ["Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 6,
+          "validationRules": {
+            "length": "Typically 1-2 pages",
+            "content": "Must explain academic goals and research interests",
+            "specific": "Should be specific to chosen program"
+          }
+        },
+        {
+          "id": "research_proposal",
+          "name": "Research Proposal", 
+          "description": "Detailed research proposal - must be in line with faculty research",
+          "programLevels": ["Master by Research", "PhD"],
+          "required": true,
+          "conditional": true,
+          "conditionalLogic": {
+            "condition": "programType === 'research'",
+            "description": "Required only for research-based programs"
+          },
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 10,
+          "displayOrder": 7,
+          "validationRules": {
+            "length": "Typically 5-10 pages for Master, 10-15 pages for PhD",
+            "structure": "Must include methodology, literature review, timeline",
+            "alignment": "Must align with faculty research areas"
+          }
+        },
+        {
+          "id": "recommendation_letters",
+          "name": "Recommendation Letters (2)",
+          "description": "Academic or professional references - preferably from academic referees",
+          "programLevels": ["Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 8,
+          "quantity": 2,
+          "validationRules": {
+            "letterhead": "Must be on official letterhead",
+            "contact": "Must include referee contact information",
+            "recent": "Should be recent (within 1 year)",
+            "relevant": "Should be from relevant academic or professional contacts"
+          }
+        },
+        {
+          "id": "cv_resume",
+          "name": "CV / Resume",
+          "description": "Current curriculum vitae - relevant for research or mature applicants", 
+          "programLevels": ["Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 9,
+          "validationRules": {
+            "current": "Must be up-to-date",
+            "relevant": "Should highlight relevant experience and achievements",
+            "format": "Professional format and presentation"
+          }
+        },
+        {
+          "id": "white_bg_photo",
+          "name": "White Background Photo",
+          "description": "Passport-style photograph - required by some universities, mandatory during visa",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": false,
+          "fileTypes": ["jpg", "png"],
+          "maxSizeMB": 2,
+          "displayOrder": 10,
+          "validationRules": {
+            "background": "Must have plain white background",
+            "size": "Standard passport photo dimensions",
+            "recent": "Must be taken within 6 months",
+            "quality": "High resolution and clear"
+          }
+        },
+        {
+          "id": "birth_certificate",
+          "name": "Birth Certificate",
+          "description": "Official birth certificate - public unis may ask for this",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 11,
+          "validationRules": {
+            "official": "Must be official government-issued document",
+            "language": "English translation required if not in English"
+          }
+        },
+        {
+          "id": "address_proof",
+          "name": "Address Proof",
+          "description": "Utility bill or official address proof - based on university policy",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 12,
+          "validationRules": {
+            "recent": "Must be dated within 3 months",
+            "name": "Must show applicant's name and address",
+            "official": "From recognized utility company or government agency"
+          }
+        },
+        {
+          "id": "application_form",
+          "name": "Application Form",
+          "description": "University-specific application form - may be required in custom format",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 13,
+          "validationRules": {
+            "complete": "All fields must be completed",
+            "signature": "Must be signed if required",
+            "format": "Must use university's official form"
+          }
+        }
+      ]
+    },
+    
+    "visa": {
+      "phase": "Visa",
+      "description": "Documents required for visa application and immigration",
+      "documents": [
+        {
+          "id": "offer_letter",
+          "name": "Offer Letter",
+          "description": "Official university offer letter - provided by university after acceptance",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf"],
+          "maxSizeMB": 5,
+          "displayOrder": 20,
+          "validationRules": {
+            "official": "Must be on official university letterhead",
+            "complete": "Must include all program details and conditions",
+            "valid": "Must be valid and not expired"
+          }
+        },
+        {
+          "id": "visa_application",
+          "name": "Visa Application Form",
+          "description": "Completed visa application form - usually EMGS or similar formats",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 21,
+          "validationRules": {
+            "complete": "All sections must be completed",
+            "signature": "Must be signed by applicant",
+            "photos": "Must include required passport photos"
+          }
+        },
+        {
+          "id": "medical_report",
+          "name": "Medical Report (EMGS format)",
+          "description": "Medical examination report in required format",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf"],
+          "maxSizeMB": 10,
+          "displayOrder": 22,
+          "validationRules": {
+            "format": "Must be in EMGS or immigration-specified format",
+            "doctor": "Must be from approved medical center/doctor",
+            "recent": "Must be recent (within 3 months)",
+            "complete": "All required tests must be included"
+          }
+        },
+        {
+          "id": "bank_statement",
+          "name": "Bank Statement",
+          "description": "Financial proof documents showing sufficient funds",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 10,
+          "displayOrder": 23,
+          "validationRules": {
+            "recent": "Must be recent (within 1 month)",
+            "official": "Must be official bank statements",
+            "balance": "Must show sufficient balance for tuition and living expenses",
+            "period": "Should cover 6-month period"
+          }
+        },
+        {
+          "id": "sponsor_letter",
+          "name": "Sponsor Letter / Financial Guarantee",
+          "description": "Sponsorship documentation if applicable",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 24,
+          "validationRules": {
+            "notarized": "May need to be notarized",
+            "details": "Must include sponsor details and relationship",
+            "amount": "Must specify amount being sponsored"
+          }
+        },
+        {
+          "id": "visa_fee_receipt",
+          "name": "Visa Fee Receipt",
+          "description": "Proof of visa fee payment",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 25,
+          "validationRules": {
+            "official": "Must be official payment receipt",
+            "amount": "Must show correct visa fee amount",
+            "applicant": "Must show applicant's name"
+          }
+        },
+        {
+          "id": "passport_photo",
+          "name": "Passport-Size Photo",
+          "description": "Recent passport-sized photographs for visa",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": true,
+          "conditional": false,
+          "fileTypes": ["jpg", "png"],
+          "maxSizeMB": 2,
+          "displayOrder": 26,
+          "quantity": "2-6 depending on country requirements",
+          "validationRules": {
+            "size": "Must be standard passport photo size",
+            "background": "White or light colored background",
+            "recent": "Must be taken within 6 months",
+            "quality": "High resolution and clear"
+          }
+        },
+        {
+          "id": "affidavit_letter",
+          "name": "Affidavit Letter",
+          "description": "Required if name differs between passport and academic documents",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": true,
+          "conditionalLogic": {
+            "condition": "namesDiffer === true",
+            "description": "Required only if passport name differs from academic certificates"
+          },
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 27,
+          "validationRules": {
+            "notarized": "Must be notarized",
+            "explanation": "Must explain name differences",
+            "official": "Must be on official letterhead or legal format"
+          }
+        },
+        {
+          "id": "yellow_fever_cert",
+          "name": "Yellow Fever Certificate",
+          "description": "Yellow fever vaccination certificate - required for Sudanese students",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": true,
+          "conditionalLogic": {
+            "condition": "nationality === 'Sudan'",
+            "description": "Required only for Sudanese students"
+          },
+          "applicableNationalities": ["Sudan"],
+          "fileTypes": ["pdf", "jpg", "png"],
+          "maxSizeMB": 5,
+          "displayOrder": 28,
+          "validationRules": {
+            "who": "Must be WHO-approved certificate",
+            "valid": "Must be valid (within 10 years of vaccination)",
+            "official": "Must be from authorized medical center"
+          }
+        },
+        {
+          "id": "embassy_noc",
+          "name": "NOC from Embassy",
+          "description": "No Objection Certificate from home country embassy",
+          "programLevels": ["Foundation", "Diploma", "Bachelor", "Master", "PhD"],
+          "required": false,
+          "conditional": true,
+          "conditionalLogic": {
+            "condition": "nationality in ['Sudan', 'Oman', 'Libya']",
+            "description": "Required for students from Sudan, Oman, and Libya"
+          },
+          "applicableNationalities": ["Sudan", "Oman", "Libya"],
+          "fileTypes": ["pdf", "doc", "docx"],
+          "maxSizeMB": 5,
+          "displayOrder": 29,
+          "validationRules": {
+            "embassy": "Must be from official embassy or consulate",
+            "letterhead": "Must be on official letterhead",
+            "recent": "Must be recent (within 3 months)",
+            "purpose": "Must clearly state purpose for study abroad"
+          }
+        }
+      ]
+    }
+  },
+  
+  "programLevelMappings": {
+    "Foundation": {
+      "displayName": "Foundation Program",
+      "description": "Preparatory program before bachelor's degree",
+      "requiredDocuments": ["passport_scan", "high_school_cert"],
+      "optionalDocuments": ["english_cert", "white_bg_photo", "birth_certificate", "address_proof"]
+    },
+    "Diploma": {
+      "displayName": "Diploma Program",
+      "description": "Diploma or certificate program",
+      "requiredDocuments": ["passport_scan", "high_school_cert"],
+      "optionalDocuments": ["english_cert", "white_bg_photo", "birth_certificate", "address_proof"]
+    },
+    "Bachelor": {
+      "displayName": "Bachelor's Degree",
+      "description": "Undergraduate degree program",
+      "requiredDocuments": ["passport_scan", "high_school_cert"],
+      "optionalDocuments": ["english_cert", "white_bg_photo", "birth_certificate", "address_proof"]
+    },
+    "Master": {
+      "displayName": "Master's Degree",
+      "description": "Graduate degree program",
+      "requiredDocuments": ["passport_scan", "bachelor_cert", "statement_purpose", "recommendation_letters", "cv_resume"],
+      "optionalDocuments": ["english_cert", "white_bg_photo", "birth_certificate", "address_proof"],
+      "conditionalDocuments": ["research_proposal"]
+    },
+    "PhD": {
+      "displayName": "Doctor of Philosophy",
+      "description": "Doctoral degree program",
+      "requiredDocuments": ["passport_scan", "bachelor_cert", "master_cert", "statement_purpose", "research_proposal", "recommendation_letters", "cv_resume"],
+      "optionalDocuments": ["english_cert", "white_bg_photo", "birth_certificate", "address_proof"]
+    }
+  },
+  
+  "nationalitySpecificRequirements": {
+    "Sudan": {
+      "additionalDocuments": ["yellow_fever_cert", "embassy_noc"],
+      "specialInstructions": "Sudanese students require Yellow Fever Certificate and NOC from embassy",
+      "processingNote": "Additional processing time may be required for embassy NOC"
+    },
+    "Oman": {
+      "additionalDocuments": ["embassy_noc"],
+      "specialInstructions": "Omani students require NOC from embassy",
+      "processingNote": "Embassy NOC processing may take 2-4 weeks"
+    },
+    "Libya": {
+      "additionalDocuments": ["embassy_noc"],
+      "specialInstructions": "Libyan students require NOC from embassy",
+      "processingNote": "Embassy NOC processing may take 2-4 weeks"
+    }
+  },
+  
+  "fileTypeValidation": {
+    "pdf": {
+      "maxSize": "10MB",
+      "description": "Preferred format for official documents"
+    },
+    "doc": {
+      "maxSize": "10MB", 
+      "description": "Microsoft Word document"
+    },
+    "docx": {
+      "maxSize": "10MB",
+      "description": "Microsoft Word document (newer format)"
+    },
+    "jpg": {
+      "maxSize": "5MB",
+      "description": "JPEG image format"
+    },
+    "png": {
+      "maxSize": "5MB", 
+      "description": "PNG image format"
+    }
+  },
+  
+  "validationMessages": {
+    "fileSizeExceeded": "File size exceeds maximum allowed limit",
+    "invalidFileType": "File type not supported for this document",
+    "required": "This document is required for your application",
+    "conditional": "This document is required based on your program or nationality",
+    "optional": "This document is optional but recommended",
+    "uploadSuccess": "Document uploaded successfully",
+    "uploadError": "Failed to upload document. Please try again."
+  },
+  
+  "uiConfiguration": {
+    "groupByPhase": true,
+    "showProgressIndicator": true,
+    "enableDragDrop": true,
+    "showFilePreview": true,
+    "autoSave": true,
+    "showValidationRules": true,
+    "collapsibleSections": true,
+    "mobileOptimized": true
+  }
+}
