@@ -12,10 +12,6 @@ import {
   Bell,
   HelpCircle,
   Users,
-  GraduationCap,
-  Building,
-  BookOpen,
-  Truck,
   DollarSign,
 } from 'lucide-react';
 

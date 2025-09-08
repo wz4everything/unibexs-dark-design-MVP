@@ -319,6 +319,19 @@ const ApplicationDetailsV3: React.FC<ApplicationDetailsV3Props> = ({
     }
   }, [application?.id, application?.currentStatus, application?.currentStage]);
 
+  // Force component re-render when application status changes
+  const [renderKey, setRenderKey] = useState(0);
+  
+  useEffect(() => {
+    if (application?.currentStatus) {
+      console.log('📱 [DEBUG] Application status changed, forcing re-render:', {
+        newStatus: application.currentStatus,
+        renderKey: renderKey + 1
+      });
+      setRenderKey(prev => prev + 1);
+    }
+  }, [application?.currentStatus, application?.currentStage, renderKey]);
+
   // ZERO HARDCODED LOGIC! Everything from configuration
   const getCurrentStatus = (app: Application, isAdmin: boolean) => {
     const role = isAdmin ? 'admin' : 'partner';
@@ -885,19 +898,6 @@ const ApplicationDetailsV3: React.FC<ApplicationDetailsV3Props> = ({
       </div>
     );
   }
-
-  // Force component re-render when application status changes
-  const [renderKey, setRenderKey] = useState(0);
-  
-  useEffect(() => {
-    if (application?.currentStatus) {
-      console.log('📱 [DEBUG] Application status changed, forcing re-render:', {
-        newStatus: application.currentStatus,
-        renderKey: renderKey + 1
-      });
-      setRenderKey(prev => prev + 1);
-    }
-  }, [application?.currentStatus, application?.currentStage]);
 
   // Memoize currentStatus based on application data to ensure fresh calculation
   const currentStatus = useMemo(() => {

@@ -8,7 +8,6 @@ import Sidebar from '@/components/layout/Sidebar';
 import {
   Search,
   User,
-  Mail,
   Phone,
   Flag,
   Calendar,

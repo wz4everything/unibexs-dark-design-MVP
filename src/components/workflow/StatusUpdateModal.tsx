@@ -87,6 +87,9 @@ const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
   
   const currentUser = AuthService.getCurrentUser();
   
+  // Move workflow engine hook to component level to avoid calling inside callback
+  const workflowEngine = useWorkflowEngine();
+  
   useEffect(() => {
     if (isOpen) {
       setSelectedStatus('');
@@ -128,7 +131,6 @@ const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
       }));
     } else {
       // For Stages 2-5, use the new workflow engine's authority matrix
-      const workflowEngine = useWorkflowEngine();
       const actor = isAdmin ? 'Admin' : 'Partner';
       const workflowActor = isAdmin ? 'Admin' : 'Partner';
       
@@ -1026,7 +1028,7 @@ const StatusUpdateModal: React.FC<StatusUpdateModalProps> = ({
                       <li><strong>Additional Documents Required</strong> - If immigration needs more documents</li>
                     </ul>
                     <p className="text-xs text-blue-400 mt-2 italic">
-                      💡 To issue visa documents: First select "Visa Approved", then use "Visa Issued" action.
+                      💡 To issue visa documents: First select &quot;Visa Approved&quot;, then use &quot;Visa Issued&quot; action.
                     </p>
                   </div>
                 </div>
