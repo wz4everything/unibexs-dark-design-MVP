@@ -382,6 +382,12 @@ const ApplicationDetailsV3: React.FC<ApplicationDetailsV3Props> = ({
     }
   };
 
+  // Memoize currentStatus based on application data to ensure fresh calculation
+  const currentStatus = useMemo(() => {
+    if (!application) return null;
+    return getCurrentStatus(application, isAdmin);
+  }, [application, isAdmin, renderKey, getCurrentStatus]);
+
   // NO MORE HARDCODED MESSAGES! Get from configuration
   const getPrimaryMessage = (app: Application, isAdmin: boolean) => {
     const role = isAdmin ? 'admin' : 'partner';
@@ -898,12 +904,6 @@ const ApplicationDetailsV3: React.FC<ApplicationDetailsV3Props> = ({
       </div>
     );
   }
-
-  // Memoize currentStatus based on application data to ensure fresh calculation
-  const currentStatus = useMemo(() => {
-    if (!application) return null;
-    return getCurrentStatus(application, isAdmin);
-  }, [application?.currentStatus, application?.currentStage, application?.id, isAdmin, renderKey]);
   
   const stage = getStageDisplay(application);
   
